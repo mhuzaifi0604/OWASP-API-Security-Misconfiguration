@@ -4,7 +4,7 @@ import datetime
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5500"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = 'Security Misconfig 420'
 
 users = []
@@ -32,7 +32,7 @@ def signup():
         "password": password,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
     }
-    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm=allowed_algorithms[1])
 
     print(f"Received data - Username: {username}, Password: {password}")
     
@@ -45,7 +45,7 @@ def validate():
     try:
         decoded = jwt.decode(token, options={"verify_signature": False}, algorithms=allowed_algorithms)
         print(decoded)
-        return jsonify({'message': 'Valid token'})
+        return jsonify({'message': 'Valid token && User Validated Successfully!'})
     except jwt.ExpiredSignatureError:
         return jsonify({'message': 'Token expired'})
 
