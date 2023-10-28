@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python-Flask HTML Connection</title>
+</head>
+<body style="display: flex; flex-direction: column; align-items: center;">
+    <h1>Welcome to Security Misconfiguration Demo!</h1>
+    <p>This Form will be used for displaying how a simple security misconfig can cost an attack to an organization.</p>
+    <div style="text-align: center;">
+        <button id="loginButton" onclick="showLoginForm()">Login</button>
+        <button id="signupButton" onclick="showSignupForm()">Signup</button>
+    </div>
+    <form
+        id="signupForm"
+        method="post"
+        action="http://localhost:5000/signup"
+        style="border-width: 2px; border-style: solid; padding: 2px; border-color: black; width: 60%; display: flex; flex-direction: column; gap: 30px; align-items: center;"
+    >
+        <h1> Sign Up Form </h1>
+        <label for="username" style=" display: flex; flex-direction: column; gap: 10px; width: 90%;">
+            <strong style="color: black;">Username <strong style="color: red;">*</strong></strong>
+            <input
+                id="signupUsername"
+                style="width: 90%; height: 20px; border-width: 2px; border-radius: 5px; border-style: solid; border-color: black; margin-left: 8px; padding: 2px"
+                type="text"
+                name="username"
+                placeholder="Username"
+                required
+            />
+        </label>
+        <label for="password" style=" display: flex; flex-direction: column; gap: 4px; width: 90%;">
+            <strong style="color: black;">Password <strong style="color: red;">*</strong></strong>
+            <input
+                id="signupPassword"
+                style="width: 90%; height: 20px; border-width: 2px; border-radius: 5px; border-style: solid; border-color: black; margin-left: 8px; padding: 2px"
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+            />
+        </label>
+        <label for="cpassword" style=" display: flex; flex-direction: column; gap: 4px; width: 90%;">
+            <strong style="color: black;">Confirm Password <strong style="color: red;">*</strong></strong>
+            <input
+                id="signupCPassword"
+                style="width: 90%; height: 20px; border-width: 2px; border-radius: 5px; border-style: solid; border-color: black; margin-left: 8px; padding: 2px"
+                type="password"
+                name="cpassword"
+                placeholder="Confirm Password"
+                required
+            />
+        </label>
+        <button style="width: max-content; height: 30px; font-size: large; font-weight: bold; margin-top:  10px;" type="submit">Submit</button>
+    </form>
+
+    <form
+        id="loginForm"
+        method="post"
+        action="http://localhost:5000/validate"
+        style="border-width: 2px; border-style: solid; padding: 2px; border-color: black; width: 60%; display: flex; flex-direction: column; gap: 30px; align-items: center;"
+    >
+        <h1> Login Page </h1>
+        <label for="username" style=" display: flex; flex-direction: column; gap: 10px; width: 90%;">
+            <strong style="color: black;">Username <strong style="color: red;">*</strong></strong>
+            <input
+                style="width: 90%; height: 20px; border-width: 2px; border-radius: 5px; border-style: solid; border-color: black; margin-left: 8px; padding: 2px"
+                type="text"
+                name="username"
+                placeholder="Username"
+                required
+            />
+        </label>
+        <label for="password" style=" display: flex; flex-direction: column; gap: 4px; width: 90%;">
+            <strong style="color: black;">Password <strong style="color: red;">*</strong></strong>
+            <input
+                style="width: 90%; height: 20px; border-width: 2px; border-radius: 5px; border-style: solid; border-color: black; margin-left: 8px; padding: 2px"
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+            />
+        </label>
+        <input type="hidden" name="token" id="token"/>
+        <button style="width: max-content; height: 30px; font-size: large; font-weight: bold;" type="submit">Submit</button>
+    </form>
+    <script>
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("signupForm").style.display = "none";
+    
+        function showLoginForm() {
+            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("signupForm").style.display = "none";
+        }
+    
+        function showSignupForm() {
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("signupForm").style.display = "block";
+        }
+    
+        document.querySelector('#signupForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the form from submitting
+    
+            const formData = new FormData(document.querySelector('#signupForm'));
+    
+            // Send the form data to the server
+            fetch('http://localhost:5000/signup', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                const receivedToken = data.token;
+                console.log('Received token:', receivedToken);
+                document.getElementById("signupUsername").value = "";
+                document.getElementById("signupPassword").value = "";
+                document.getElementById("signupCPassword").value = "";
+                document.getElementById("token").value = receivedToken;
+                showLoginForm();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    
+        document.querySelector('#loginForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the form from submitting
+    
+            const formData = new FormData(document.querySelector('#loginForm'));
+    
+            // Send the form data to the server
+            fetch('http://localhost:5000/validate', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                const reply = data.message;
+                console.log('Received token:', reply);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>
